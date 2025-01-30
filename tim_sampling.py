@@ -166,7 +166,7 @@ if __name__ == "__main__":
     
     
     #if arguments are given
-    if args.par or args.tim:
+    if args.par:
         parfile = args.par
         timfile = args.tim
         
