@@ -159,15 +159,14 @@ def gen_fresh_toas(parfile, output="output.tim"):
 
     
 if __name__ == "__main__":
-    parser=argparse.ArgumentParser(description="sample argument parser")
-    args=parser.parse_args()
-    parser.add_argument("par", type=str)
-    parser.add_argument("tim", type=str)
+    parser=argparse.ArgumentParser(description="generate a tim file for a given par file")
+    parser.add_argument("--par", type=str)
+    parser.add_argument("--tim", type=str, default="output.tim")
     args = parser.parse_args()
     
     
     #if arguments are given
-    if args.par and args.tim:
+    if args.par or args.tim:
         parfile = args.par
         timfile = args.tim
         
