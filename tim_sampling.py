@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import subprocess
+import argparse
 
 def find_sequence_period_info(sequence_type, args):
     if sequence_type == 'logarithmic':
@@ -155,6 +156,23 @@ def gen_fresh_toas(parfile, output="output.tim"):
         out, err = proc.communicate()
         #print(out)
         #print(err)
+
     
 if __name__ == "__main__":
-    main()
+    parser=argparse.ArgumentParser(description="sample argument parser")
+    args=parser.parse_args()
+    parser.add_argument("par", type=str)
+    parser.add_argument("tim", type=str)
+    args = parser.parse_args()
+    
+    
+    #if arguments are given
+    if args.par and args.tim:
+        parfile = args.par
+        timfile = args.tim
+        
+        gen_fresh_toas(parfile, output=timfile)
+    
+    #if no arguments are given
+    else:
+        main()
