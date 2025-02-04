@@ -41,10 +41,10 @@ def main():
       dicts[index] = dict
     
   # create a dataframe from the dictionary
-  all_pars = pd.DataFrame.from_dict(dicts, orient='index', float_format='%.15f')
+  all_pars = pd.DataFrame.from_dict(dicts, orient='index')
   
   # export to csv
-  all_pars.to_csv(output, index=False, sep=delimeter)
+  all_pars.to_csv(output, index=False, sep=delimeter, float_format='%.15f')
   
 if __name__ == "__main__":
   parser=argparse.ArgumentParser(description="read the properties of many par files")
