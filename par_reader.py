@@ -22,7 +22,7 @@ def main():
     df = df.T
     df.columns = df.iloc[0]
     df.insert(0,'filename',f)
-    print(df)
+    #print(df)
 
     # use only the data
     dict = df.to_dict(orient='records')[1]
