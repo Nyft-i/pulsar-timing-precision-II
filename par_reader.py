@@ -44,11 +44,11 @@ def main():
   all_pars = pd.DataFrame.from_dict(dicts, orient='index')
   
   # export to csv
-  all_pars.to_csv(output, index=False, sep=delimeter, float_format='%.15f')
+  all_pars.to_csv(output, index=False, sep=delimeter, float_format='%f')
   
 if __name__ == "__main__":
   parser=argparse.ArgumentParser(description="read the properties of many par files")
-  parser.add_argument("--dir", type=str, default="/")
+  parser.add_argument("--dir", type=str, default=".")
   parser.add_argument("--out", type=str, default="pars.csv")
   parser.add_argument("--sep", type=str, default=',')
   parser.add_argument("-r", type=bool, default=False)
