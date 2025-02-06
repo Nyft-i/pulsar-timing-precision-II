@@ -25,13 +25,15 @@ def main():
   dicts = {}
   
   if recursive:
-    for dirnum, (subdir, dirs, files) in enumerate(os.walk(directory)):
+    curr_index = 0
+    for subdir, dirs, files in os.walk(directory):
       for file in files:
         f = os.path.join(subdir, file)
         if not f.endswith('.par'):
           continue
         dict = dict_creator(f)
-        dicts[dirnum] = dict
+        dicts[curr_index] = dict
+        curr_index += 1
   else:
     for index, filename in enumerate(os.listdir(directory)):
       f = os.path.join(directory, filename)
