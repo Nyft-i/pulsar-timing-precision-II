@@ -175,7 +175,7 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
         # Sample according to strategy
         indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
         # save as new tim
-        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{curr_offset}d_of_{strategy_period}_{sequence_type}.tim")
+        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{curr_offset}d_of_{strategy_period:.1f}_{sequence_type}.tim")
         
         # increment offset
         curr_offset += glitch_distance
