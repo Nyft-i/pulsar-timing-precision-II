@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import time
 import subprocess
 import argparse
+import pathlib
 
 def find_sequence_period_info(sequence_type, args):
     if sequence_type == 'logarithmic':
@@ -156,12 +157,37 @@ def gen_fresh_toas(parfile, output="output.tim"):
         out, err = proc.communicate()
         #print(out)
         #print(err)
+        
+def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_folder="."):
+    # creates a folder to store all the tim files
+    pathlib.Path(output_folder).mkdir(parents=True, exist_ok=True) 
+    
+    strategy_period = find_sequence_period_info(sequence_type, args)[0]
+    
+    # step through strategy periods in intervals of glitch_distance
+    curr_offset = 0
+    while curr_offset < strategy_period:    
+        # generate TOAs
+        temp_timfile = "temp_gen_many_offset_tims.tim"
+        gen_fresh_toas(parfile, output=temp_timfile)
+        toas = np.genfromtxt(temp_timfile, skip_header=1, usecols=[2])
+
+        # Sample according to strategy
+        indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
+        # save as new tim
+        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{curr_offset}d_of_{strategy_period}_{sequence_type}.tim")
+        
+        # increment offset
+        curr_offset += glitch_distance
+    
+    
 
     
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description="generate a tim file for a given par file")
     parser.add_argument("--par", type=str)
     parser.add_argument("--tim", type=str, default="output.tim")
+    parser.add_argument("--gen_many", type=bool)
     args = parser.parse_args()
     
     
@@ -171,6 +197,31 @@ if __name__ == "__main__":
         timfile = args.tim
         
         gen_fresh_toas(parfile, output=timfile)
+        
+    if args.gen_many:
+        parfile = input("Enter the name of the par file you wish to generate many tim files for: ")
+        output_folder = input("Enter the name of the folder you wish to store the tim files in: ")
+        sequence_type = input("Enter the type of sequence you wish to sample with: ")
+        cadence_start = float(input("Enter the starting cadence: "))
+        max_gap = float(input("Enter the maximum gap: "))
+        if sequence_type == 'logarithmic':
+            log_const = float(input("Enter the logarithmic constant: "))
+            args = [cadence_start, 0, max_gap, log_const]
+        elif sequence_type == 'arithmetic':
+            sequential_increase = float(input("Enter the sequential increase: "))
+            args = [cadence_start, 0, max_gap, sequential_increase]
+        elif sequence_type == 'geometric':
+            multiplicative_increase = float(input("Enter the multiplicative increase: "))
+            args = [cadence_start, 0, max_gap, multiplicative_increase]
+        elif sequence_type == 'exponential':
+            exp_increase = float(input("Enter the exponential increase: "))
+            args = [cadence_start, 0, max_gap, exp_increase]
+        elif sequence_type == 'periodic':
+            period = float(input("Enter the period: "))
+            args = [cadence_start, 0, max_gap, period]
+        else:
+            print("invalid sequence type. break.")
+        gen_many_offset_tims(sequence_type, args, parfile,)
     
     #if no arguments are given
     else:
