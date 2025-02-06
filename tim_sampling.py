@@ -200,7 +200,10 @@ if __name__ == "__main__":
         
     if args.gen_many:
         parfile = input("Enter the name of the par file you wish to generate many tim files for: ")
-        output_folder = input("Enter the name of the folder you wish to store the tim files in: ")
+        output_folder = input("Enter the path of the folder you wish to store the tim files in (default '.'): ")
+        if output_folder == "":
+            output_folder = "."
+        glitch_distance = float(input("Enter the distance between each epoch location: "))
         sequence_type = input("Enter the type of sequence you wish to sample with: ")
         cadence_start = float(input("Enter the starting cadence: "))
         max_gap = float(input("Enter the maximum gap: "))
@@ -221,7 +224,7 @@ if __name__ == "__main__":
             args = [cadence_start, 0, max_gap, period]
         else:
             print("invalid sequence type. break.")
-        gen_many_offset_tims(sequence_type, args, parfile,)
+        gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_folder)
     
     #if no arguments are given
     else:
