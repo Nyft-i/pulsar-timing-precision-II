@@ -165,8 +165,11 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
     strategy_period = find_sequence_period_info(sequence_type, args)[0]
     
     # step through strategy periods in intervals of glitch_distance
-    curr_offset = 0
-    while curr_offset < strategy_period:    
+    start_offset = 1000 % strategy_period
+    curr_offset = start_offset
+    while curr_offset-start_offset < strategy_period:    
+        if curr_offset>strategy_period:
+            curr_offset -= strategy_period
         # generate TOAs
         temp_timfile = "temp_gen_many_offset_tims.tim"
         gen_fresh_toas(parfile, output=temp_timfile)
@@ -175,7 +178,7 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
         # Sample according to strategy
         indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
         # save as new tim
-        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{curr_offset}d_of_{strategy_period:.1f}_{sequence_type}.tim")
+        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{curr_offset}d_of_{strategy_period:.1f}d_{sequence_type}.tim")
         
         # increment offset
         curr_offset += glitch_distance
