@@ -242,6 +242,10 @@ if __name__ == "__main__":
     parser.add_argument("--gen_many", type=bool)
     args = parser.parse_args()
     
+    # if no arguments are given
+    if not args.par and not args.gen_many:
+        main()
+    
     
     #if arguments are given
     if args.par:
