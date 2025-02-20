@@ -186,8 +186,8 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
         # Sample according to strategy
         indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
         # save as new tim
-        final_output_folder = f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim"
-        gen_new_tim(temp_timfile, indexes, final_output_folder)
+        final_output_folder = "{output_folder}\\{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim"
+        gen_new_tim(temp_timfile, indexes, final_output_folder.format(output_folder=output_folder, days_into_period=days_into_period, strategy_period=strategy_period, sequence_type=sequence_type))
         
         print("curr_offset: ", curr_offset)
         print("days_into_period: ", days_into_period)
@@ -223,7 +223,7 @@ def gen_many_from_master(sequence_type, args, master_tim, glitch_distance, outpu
         # Sample according to strategy
         indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
         # save as new tim
-        final_output_folder = f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim"
+        final_output_folder = "{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim".format(output_folder=output_folder, days_into_period=days_into_period, strategy_period=strategy_period, sequence_type=sequence_type)
         gen_new_tim(master_tim, indexes, final_output_folder)
         
         #print("curr_offset: ", curr_offset)
