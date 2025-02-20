@@ -196,13 +196,49 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
         curr_offset += glitch_distance
         days_into_period += glitch_distance
     
+def gen_many_from_master(sequence_type, args, master_tim, glitch_distance, output_folder="."):
+    # creates a folder to store all the tim files
+    pathlib.Path(output_folder).mkdir(parents=True, exist_ok=True) 
     
+    strategy_period = find_sequence_period_info(sequence_type, args)[0]
+    
+    # step through strategy periods in intervals of glitch_distance
+    start_offset = 1000 % strategy_period
+    curr_offset = start_offset
+    days_into_period = 0
+    passed_end = False
+    print("start_offset: ", start_offset)
+    print("strategy_period: ", strategy_period)
+    while curr_offset-start_offset < strategy_period:    
+        if curr_offset>strategy_period:
+            curr_offset -= strategy_period
+            passed_end = True
+        if passed_end and curr_offset > start_offset:
+            break    
+        
+        # generate TOAs
+        toas = np.genfromtxt(master_tim, skip_header=1, usecols=[2])
 
+        # Sample according to strategy
+        indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
+        # save as new tim
+        gen_new_tim(master_tim, indexes, f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim")
+        
+        print("curr_offset: ", curr_offset)
+        print("days_into_period: ", days_into_period)
+        
+        
+        # increment offset
+        curr_offset += glitch_distance
+        days_into_period += glitch_distance
+    
+    
     
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description="generate a tim file for a given par file")
     parser.add_argument("--par", type=str)
-    parser.add_argument("--tim", type=str, default="output.tim")
+    #parser.add_argument("--tim", type=str, default="master.tim")
+    parser.add_argument("--out", type=str, default = "output.tim")
     parser.add_argument("--gen_many", type=bool)
     args = parser.parse_args()
     
@@ -210,12 +246,13 @@ if __name__ == "__main__":
     #if arguments are given
     if args.par:
         parfile = args.par
-        timfile = args.tim
+        timfile = args.out
         
         gen_fresh_toas(parfile, output=timfile)
         
     if args.gen_many:
-        parfile = input("Enter the name of the par file you wish to generate many tim files for: ")
+        master_file = input("Enter the name of the master tim file you wish to sample from (leave blank if you would like to generate a new tim file every time): ")
+        if master_file == "": parfile = input("Enter the name of the par file you wish to generate many tim files for: ")
         output_folder = input("Enter the path of the folder you wish to store the tim files in (default '.'): ")
         if output_folder == "":
             output_folder = "."
@@ -240,7 +277,11 @@ if __name__ == "__main__":
             args = [cadence_start, 0, max_gap, period]
         else:
             print("invalid sequence type. break.")
-        gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_folder)
+            
+        if master_file == "":
+            gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_folder)
+        else:
+            gen_many_from_master(sequence_type, args, master_file, glitch_distance, output_folder)
     
     #if no arguments are given
     else:
