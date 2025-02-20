@@ -186,7 +186,7 @@ def gen_many_offset_tims(sequence_type, args, parfile, glitch_distance, output_f
         # Sample according to strategy
         indexes, num_toas = sample_from_toas(toas, sequence_type, (args[0], curr_offset, args[2], args[3]), verbose=False)
         # save as new tim
-        gen_new_tim(temp_timfile, indexes, f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim")
+        #gen_new_tim(temp_timfile, indexes, f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim")
         
         print("curr_offset: ", curr_offset)
         print("days_into_period: ", days_into_period)
@@ -224,8 +224,8 @@ def gen_many_from_master(sequence_type, args, master_tim, glitch_distance, outpu
         # save as new tim
         gen_new_tim(master_tim, indexes, f"{output_folder}/{days_into_period:.2f}d_of_{strategy_period:.1f}d_{sequence_type}.tim")
         
-        print("curr_offset: ", curr_offset)
-        print("days_into_period: ", days_into_period)
+        #print("curr_offset: ", curr_offset)
+        #print("days_into_period: ", days_into_period)
         
         
         # increment offset
