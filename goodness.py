@@ -54,7 +54,6 @@ def toa_maker(sequence_type, args):
       marker += cadence
       
   return all_obs, endpoints
-
     
 def goodness_graph(sequence_type, args, y_param, true_val, csv_file, colour='orange'):
 
@@ -106,7 +105,7 @@ def goodness_graph(sequence_type, args, y_param, true_val, csv_file, colour='ora
     bay_df = bay_df.rename(columns={'GLTD_1_err': 'GLTD_2_err', 'GLTD2_1_err': 'GLTD_1_err', 'GLF0D_1_err': 'GLF0D_2_err', 'GLF0D2_1_err': 'GLF0D_1_err'})
     
     
-  print(bay_df)
+  #print(bay_df)
   
   #normalise offset
   #convert offset to float
@@ -166,8 +165,8 @@ def goodness_graph(sequence_type, args, y_param, true_val, csv_file, colour='ora
   #axis
   lowest_y, highest_y = plt.gca().get_ylim()
   print(lowest_y, highest_y)
-  if np.min(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,)))) < lowest_y: lowest_y = np.min(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,))))
-  if np.max(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,)))) > highest_y: highest_y = np.max(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,))))
+  if np.nanmin(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,)))) < lowest_y: lowest_y = np.nanmin(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,))))
+  if np.nanmax(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,)))) > highest_y: highest_y = np.nanmax(np.concatenate((y_vals, y_vals_refit, y_vals_bay, (0,))))
   plt.ylim(lowest_y, highest_y)
   
   # plot the error bars after the above segment so that they do not influence the x and y lims
@@ -180,6 +179,7 @@ def goodness_graph(sequence_type, args, y_param, true_val, csv_file, colour='ora
 
   # toa plot
   plt.eventplot(toas, linewidths=2, linelengths=99999, colors = "black", alpha=0.3, label="observation", zorder=1)
+  #plt.grid()
   
   return len(error_array)
   
@@ -199,7 +199,7 @@ def plot_28():
   T_GLTD_2 = 7
   
   
-  plt.suptitle("relative deviation of found parameter values to true values.", y=0.92)
+  plt.suptitle("relative deviation of found parameter values to true values.", y=1)
   
   #geo
   strategy = 'periodic'
@@ -423,13 +423,11 @@ def plot_28():
   plt.savefig("stn_123_bayes.png", dpi=400, bbox_inches="tight")
   
   plt.show()
-  
-#def plot_12():
-
-def plot_20():
+    
+def plot_results():
   # create figure and gs
-  fig = plt.figure(figsize=(20, 10))
-  gs = fig.add_gridspec(6,5, wspace=0.1, hspace=0.25)
+  fig = plt.figure(figsize=(15, 3))
+  gs = fig.add_gridspec(2, 4, wspace=0.1, hspace=0.25)
   axs = gs.subplots(sharex='col', sharey='row')
   
   #pulsar properties
@@ -438,192 +436,96 @@ def plot_20():
   T_GLF1_1 = -1.5e-14
   T_GLF0D_1 = 3e-7
   T_GLTD_1 = 100
+  T_GLF0D_2 = 1.5e-7
+  T_GLTD_2 = 7
   
-  plt.suptitle("relative deviation of found parameter values to true values.", y=0.92)
   
-  #geo
-  strategy = 'periodic'
-  args = (0.5, 0, 25, 7)
-  file = '.\\par_reader\\TN_2exp\\peri.csv'
-  per_col = "limegreen"
+  plt.suptitle(r"$\tau_{d,short} = 7$d", y=1.05, fontsize=20)
   
-
-  
-  plt.sca(axs[1,0])
-  yparam = "GLEP_1_err"
-  true_val = T_GLEP_1
-  plt.ylabel(r"$t_g-t_{g,true}$")
-  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
-  plt.sca(axs[2,0])
-  yparam = "GLF0_1_err"
-  true_val = T_GLF0_1
-  plt.ylabel(r"$\Delta \nu/\Delta \nu_{true} - 1$")
-  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
-  plt.sca(axs[3,0])
-  yparam = "GLF1_1_err"
-  true_val = T_GLF1_1
-  plt.ylabel(r"$\dot{\nu}/\dot{\nu}_{true} - 1$")
-  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
-  plt.sca(axs[4,0])
-  yparam = "GLF0D_1_err"
-  true_val = T_GLF0D_1
-  plt.ylabel(r"$\Delta \nu_d/\Delta \nu_{d,true} - 1$")
-  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
-  plt.sca(axs[5,0])
-  yparam = "GLTD_1_err"
-  true_val = T_GLTD_1
-  plt.ylabel(r"$\tau_d/\tau_{d,true} - 1$")
-  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
-  
-  plt.xlabel("days")
-  
- 
-  #peri information
-  plt.sca(axs[0,0])
-  # hide axis
-  plt.axis('off')
-  textstr = '\n'.join((
-    r'periodic sequence',
-    r'$\Delta T = 7$'))
-  plt.text(0.5, 1, textstr, fontsize=8, verticalalignment='top', horizontalalignment='center', transform=plt.gca().transAxes)
-
-  #geometric
-  strategy = 'geometric'
-  args = (0.5, 0, 25, 1.7391)
-  file = '.\\par_reader\\seeded_tn\\7d\\geo.csv'
-  per_col = "orange"
-  
- 
-  plt.sca(axs[1,1])
-  goodness_graph(strategy, args, "GLEP_1_err", T_GLEP_1, file, colour=per_col)
-  plt.sca(axs[2,1])
-  goodness_graph(strategy, args, "GLF0_1_err", T_GLF0_1, file, colour=per_col)
-  plt.sca(axs[3,1])
-  goodness_graph(strategy, args, "GLF1_1_err", T_GLF1_1, file, colour=per_col)
-  plt.sca(axs[4,1])
-  goodness_graph(strategy, args, "GLF0D_1_err", T_GLF0D_1, file, colour=per_col)
-  plt.sca(axs[5,1])
-  num_single = goodness_graph(strategy, args, "GLTD_1_err", T_GLTD_1, file, colour=per_col)
-  plt.xlabel("days")
-
-  #geo information
-  plt.sca(axs[0,1])
-  # hide axis
-  plt.axis('off')
-  textstr = '\n'.join((
-    r'geometric sequence',
-    r'$\Delta T_{new} = k_g \Delta T$',
-    r'$k_g = 1.7391$',
-    r'$\Delta T_{max} = 25$',
-    r'$\Delta T_{min} = 0.5$'))
-  plt.text(0.5, 1, textstr, fontsize=8, verticalalignment='top', horizontalalignment='center', transform=plt.gca().transAxes)
-  
-  #arithmetic
+  # arith
   strategy = 'arithmetic'
   args = (0.5, 0, 15, 2.6019)
-  file = '.\\par_reader\\TN_2exp\\arith.csv'
   per_col = "tab:blue"
   
+  # case (a)
+  file = '.\\par_reader\\seed_123\\5d\\arith.csv'
+  plt.sca(axs[0,0])
+  yparam = "GLTD_2_err"
+  true_val = T_GLTD_2
+  plt.title("arithmetic", fontsize=12)
+  plt.ylabel("case (a) \n" r"$\frac{\tau_{d,short}}{\tau_{d,short,true}} - 1$", fontsize=15)
+  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
   
-  plt.sca(axs[1,2])
-  goodness_graph(strategy, args, "GLEP_1_err", T_GLEP_1, file, colour=per_col)
-  plt.sca(axs[2,2])
-  goodness_graph(strategy, args, "GLF0_1_err", T_GLF0_1, file, colour=per_col)
-  plt.sca(axs[3,2])
-  goodness_graph(strategy, args, "GLF1_1_err", T_GLF1_1, file, colour=per_col)
-  plt.sca(axs[4,2])
-  goodness_graph(strategy, args, "GLF0D_1_err", T_GLF0D_1, file, colour=per_col)
-  plt.sca(axs[5,2])
-  num_single = goodness_graph(strategy, args, "GLTD_1_err", T_GLTD_1, file, colour=per_col)
+  # case (b)
+  file = '.\\par_reader\\seed_123\\5d\\arith.csv'
+  plt.sca(axs[1,0])
+  yparam = "GLTD_2_err"
+  true_val = T_GLTD_2
+  plt.ylabel("case (b) \n" r"$\frac{\tau_{d,short}}{\tau_{d,short,true}} - 1$", fontsize=15)
+  goodness_graph(strategy, args, yparam, true_val, file, colour=per_col)
+ 
   plt.xlabel("days")
-
-  #arith information
-  plt.sca(axs[0,2])
-  # hide axis
-  plt.axis('off')
-  textstr = '\n'.join((
-    r'arithmetic sequence',
-    r'$\Delta T_{new} = k_a + \Delta T$',
-    r'$k_a = 2.6019$',
-    r'$\Delta T_{max} = 15$',
-    r'$\Delta T_{min} = 0.5$'))
-  plt.text(0.5, 1, textstr, fontsize=8, verticalalignment='top', horizontalalignment='center', transform=plt.gca().transAxes)
+ 
+  # geometric
+  strategy = 'geometric'
+  args = (0.5, 0, 25, 1.7391)
+  per_col = "orange"
+  
+  # case (a)
+  file = '.\\par_reader\\seed_123\\5d\\geo.csv'
+  plt.sca(axs[0,1])
+  plt.title("geometric", fontsize=12)
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
+  
+  # case (b)
+  file = '.\\par_reader\\seed_123\\5d\\geo.csv'
+  plt.sca(axs[1,1])
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
+  
+  plt.xlabel("days")
   
   # logarithmic
   strategy = 'logarithmic'
   args = (0.5, 0, 20, 24.7678)
-  file = '.\\par_reader\\TN_2exp\\log.csv'
   per_col = "mediumorchid"
   
+  # case (a)
+  file = '.\\par_reader\\seed_123\\5d\\log.csv'
+  plt.sca(axs[0,2])
+  plt.title("logarithmic", fontsize=12)
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
   
-  plt.sca(axs[1,3])
-  goodness_graph(strategy, args, "GLEP_1_err", T_GLEP_1, file, colour=per_col)
-  plt.sca(axs[2,3])
-  goodness_graph(strategy, args, "GLF0_1_err", T_GLF0_1, file, colour=per_col)
-  plt.sca(axs[3,3])
-  goodness_graph(strategy, args, "GLF1_1_err", T_GLF1_1, file, colour=per_col)
-  plt.sca(axs[4,3])
-  goodness_graph(strategy, args, "GLF0D_1_err", T_GLF0D_1, file, colour=per_col)
-  plt.sca(axs[5,3])
-  num_single = goodness_graph(strategy, args, "GLTD_1_err", T_GLTD_1, file, colour=per_col)
+  # case (b)
+  file = '.\\par_reader\\seed_123\\5d\\log.csv'
+  plt.sca(axs[1,2])
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
+  
   plt.xlabel("days")
   
-  #log information
+  # periodic
+  strategy = 'periodic'
+  args = (0.5, 0, 25, 7)
+  per_col = "limegreen"
+  
+  # case (a)
+  file = '.\\par_reader\\seed_123\\5d\\peri.csv'
   plt.sca(axs[0,3])
-  # hide axis
-  plt.axis('off')
-  textstr = '\n'.join((
-    r'logarithmic sequence',
-    r'$\Delta T_{new} = k_l \ln \left( \frac{\Delta T}{10}+1 \right)$',
-    r'$k_l = 24.7678$',
-    r'$\Delta T_{max} = 20$',
-    r'$\Delta T_{min} = 0.5$'))
-  plt.text(0.5, 1, textstr, fontsize=8, verticalalignment='top', horizontalalignment='center', transform=plt.gca().transAxes)
+  plt.title("periodic", fontsize=12)
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
   
+  # case (b)
+  file = '.\\par_reader\\seed_123\\5d\\peri.csv'
+  plt.sca(axs[1,3])
+  goodness_graph(strategy, args, "GLTD_2_err", T_GLTD_2, file, colour=per_col)
+
+  plt.xlabel("days")
+
+
   
-  # hide top right component
-  plt.sca(axs[0,4])
-  plt.axis('off')
-  
-  # true value column
-  plt.sca(axs[1,4])
-  plt.axis('off')
-  yparam = "GLEP_1_err"
-  true_val = T_GLEP_1
-  text_str = r"True %s: %.2e" % (yparam[:-4], true_val, )
-  plt.text(0.05, 0.5, text_str, fontsize=10, verticalalignment='center', horizontalalignment='left', transform=plt.gca().transAxes)
-  
-  plt.sca(axs[2,4])
-  plt.axis('off')
-  yparam = "GLF0_1_err"
-  true_val = T_GLF0_1
-  text_str = r"True %s: %.2e" % (yparam[:-4], true_val, )
-  plt.text(0.05, 0.5, text_str, fontsize=10, verticalalignment='center', horizontalalignment='left', transform=plt.gca().transAxes)
-  
-  plt.sca(axs[3,4])
-  plt.axis('off')
-  yparam = "GLF1_1_err"
-  true_val = T_GLF1_1
-  text_str = r"True %s: %.2e" % (yparam[:-4], true_val, )
-  plt.text(0.05, 0.5, text_str, fontsize=10, verticalalignment='center', horizontalalignment='left', transform=plt.gca().transAxes)
-  
-  plt.sca(axs[4,4])
-  plt.axis('off')
-  yparam = "GLF0D_1_err"
-  true_val = T_GLF0D_1
-  text_str = r"True %s: %.2e" % (yparam[:-4], true_val, )
-  plt.text(0.05, 0.5, text_str, fontsize=10, verticalalignment='center', horizontalalignment='left', transform=plt.gca().transAxes)
-  
-  plt.sca(axs[5,4])
-  plt.axis('off')
-  yparam = "GLTD_1_err"
-  true_val = T_GLTD_1
-  text_str = r"True %s: %.2e" % (yparam[:-4], true_val, )
-  plt.text(0.05, 0.5, text_str, fontsize=10, verticalalignment='center', horizontalalignment='left', transform=plt.gca().transAxes)
-  
-  plt.savefig("TN_1exp_results.png", dpi=400, bbox_inches="tight")
+  plt.savefig("results_test.png", dpi=400, bbox_inches="tight")
   
   plt.show()
+
   
 def main():
   plot_28()
